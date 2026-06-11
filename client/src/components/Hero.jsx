@@ -2,13 +2,31 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 const WORDS = ['Artistry', 'Elegance', 'Radiance', 'Confidence'];
 
+// Auto-swiping hero slideshow images.
+// TODO: Replace with the salon's own photography (keep ~1600px wide, landscape).
+const IMAGES = [
+  { src: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=80', alt: 'Stylist working in a modern salon' },
+  { src: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=80', alt: 'Makeup artist applying cosmetics' },
+  { src: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1600&q=80', alt: 'Manicured nails with polish bottles' },
+  { src: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1600&q=80', alt: 'Relaxing spa treatment' }
+];
+
+const SLIDE_INTERVAL = 4500;
+
 export default function Hero() {
   const heroRef = useRef(null);
   const [wordIndex, setWordIndex] = useState(0);
+  const [slide, setSlide] = useState(0);
 
   // Rotating headline word
   useEffect(() => {
     const timer = setInterval(() => setWordIndex((i) => (i + 1) % WORDS.length), 2600);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-swiping image slideshow
+  useEffect(() => {
+    const timer = setInterval(() => setSlide((s) => (s + 1) % IMAGES.length), SLIDE_INTERVAL);
     return () => clearInterval(timer);
   }, []);
 
@@ -37,6 +55,20 @@ export default function Hero() {
 
   return (
     <section className="hero" ref={heroRef} onMouseMove={handleMouseMove}>
+      {/* Swiping background slideshow */}
+      <div className="hero__slides" style={{ transform: `translateX(-${slide * 100}%)` }}>
+        {IMAGES.map((img, i) => (
+          <div
+            key={img.src}
+            className={`hero__slide ${i === slide ? 'is-active' : ''}`}
+            style={{ backgroundImage: `url(${img.src})` }}
+            role="img"
+            aria-label={img.alt}
+          />
+        ))}
+      </div>
+      <div className="hero__overlay" aria-hidden="true"></div>
+
       <div className="hero__glow hero__glow--1" aria-hidden="true"></div>
       <div className="hero__glow hero__glow--2" aria-hidden="true"></div>
       <div className="hero__glow hero__glow--3" aria-hidden="true"></div>
@@ -67,6 +99,20 @@ export default function Hero() {
         <div><strong>12+</strong><span>Years of Craft</span></div>
         <div><strong>20k</strong><span>Happy Clients</span></div>
         <div><strong>30+</strong><span>Signature Services</span></div>
+      </div>
+
+      {/* Slideshow dot navigation */}
+      <div className="hero__dots" role="tablist" aria-label="Hero image slides">
+        {IMAGES.map((img, i) => (
+          <button
+            key={img.src}
+            role="tab"
+            aria-selected={i === slide}
+            className={i === slide ? 'active' : ''}
+            onClick={() => setSlide(i)}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
       </div>
 
       <div className="hero__scroll-hint" aria-hidden="true"><span></span></div>
