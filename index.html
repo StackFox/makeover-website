@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venus Makover — Luxury Salon &amp; Beauty Studio</title>
+  <meta name="description" content="Venus Makover — a luxury salon experience. Explore our full catalog of hair, skin, makeup, nail, bridal and spa services. Book online or via WhatsApp." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ===== Navigation ===== -->
+  <header class="nav" id="top">
+    <a class="nav__brand" href="#top">Venus <span>Makover</span></a>
+    <nav class="nav__links" id="navLinks" aria-label="Primary navigation">
+      <a href="#services">Services</a>
+      <a href="#booking">Book</a>
+      <a href="#location">Find Us</a>
+      <a href="#booking" class="btn btn--small">Book Now</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
+    <div class="hero__glow hero__glow--2" aria-hidden="true"></div>
+    <p class="hero__eyebrow reveal">Luxury Salon &amp; Beauty Studio</p>
+    <h1 class="hero__title reveal">Where Beauty Meets <em>Artistry</em></h1>
+    <p class="hero__subtitle reveal">Indulge in a premium salon experience. From radiant skin to flawless bridal looks, our artists craft every detail just for you.</p>
+    <div class="hero__actions reveal">
+      <a href="#services" class="btn">Explore Services</a>
+      <a href="#booking" class="btn btn--ghost">Book an Appointment</a>
+    </div>
+    <div class="hero__stats reveal">
+      <div><strong>12+</strong><span>Years of Craft</span></div>
+      <div><strong>20k</strong><span>Happy Clients</span></div>
+      <div><strong>30+</strong><span>Signature Services</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Services Catalog ===== -->
+  <section class="section" id="services">
+    <p class="section__eyebrow reveal">Our Catalog</p>
+    <h2 class="section__title reveal">Signature Services</h2>
+    <p class="section__lead reveal">Browse the full menu. Tap any service for details, then book it instantly.</p>
+
+    <div class="filters reveal" id="filters" role="tablist" aria-label="Service categories"></div>
+    <div class="catalog" id="catalog"></div>
+  </section>
+
+  <!-- ===== Service Detail Modal ===== -->
+  <div class="modal" id="serviceModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__card">
+      <button class="modal__close" data-close-modal aria-label="Close dialog">&times;</button>
+      <div class="modal__icon" id="modalIcon" aria-hidden="true"></div>
+      <p class="modal__category" id="modalCategory"></p>
+      <h3 class="modal__title" id="modalTitle"></h3>
+      <p class="modal__desc" id="modalDesc"></p>
+      <div class="modal__meta">
+        <span id="modalDuration"></span>
+        <span id="modalPrice"></span>
+      </div>
+      <div class="modal__actions">
+        <button class="btn" id="modalBookBtn">Book This Service</button>
+        <a class="btn btn--whatsapp" id="modalWhatsAppBtn" target="_blank" rel="noopener">Book on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Booking ===== -->
+  <section class="section section--alt" id="booking">
+    <p class="section__eyebrow reveal">Reserve Your Moment</p>
+    <h2 class="section__title reveal">Book an Appointment</h2>
+    <p class="section__lead reveal">Fill in the form below, or message us directly on WhatsApp — whichever you prefer.</p>
+
+    <div class="booking reveal">
+      <form class="booking__form" id="bookingForm" novalidate>
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required autocomplete="name" />
+          <small class="field__error"></small>
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210" required autocomplete="tel" />
+          <small class="field__error"></small>
+        </div>
+        <div class="field">
+          <label for="service">Service</label>
+          <select id="service" name="service" required>
+            <option value="" disabled selected>Select a service…</option>
+          </select>
+          <small class="field__error"></small>
+        </div>
+        <div class="field field--half">
+          <label for="date">Preferred Date</label>
+          <input type="date" id="date" name="date" required />
+          <small class="field__error"></small>
+        </div>
+        <div class="field field--half">
+          <label for="time">Preferred Time</label>
+          <input type="time" id="time" name="time" required />
+          <small class="field__error"></small>
+        </div>
+        <div class="field">
+          <label for="notes">Notes <span class="optional">(optional)</span></label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Anything we should know?"></textarea>
+        </div>
+        <div class="booking__actions">
+          <button type="submit" class="btn">Confirm Booking</button>
+          <button type="button" class="btn btn--whatsapp" id="formWhatsAppBtn">Send via WhatsApp</button>
+        </div>
+      </form>
+
+      <div class="booking__confirm" id="bookingConfirm" hidden>
+        <div class="booking__confirm-icon" aria-hidden="true">✓</div>
+        <h3>Booking Received!</h3>
+        <p id="confirmText"></p>
+        <p class="booking__confirm-note">Our team will call you shortly to confirm your slot.</p>
+        <button class="btn btn--ghost" id="newBookingBtn">Make Another Booking</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Location ===== -->
+  <section class="section" id="location">
+    <p class="section__eyebrow reveal">Visit Us</p>
+    <h2 class="section__title reveal">Find Venus Makover</h2>
+
+    <div class="location reveal">
+      <div class="location__map">
+        <!-- TODO: Replace the bbox/marker coordinates below with the salon's real location -->
+        <iframe
+          title="Venus Makover salon location map"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=77.2067%2C28.6265%2C77.2267%2C28.6365&amp;layer=mapnik&amp;marker=28.6315%2C77.2167"
+          loading="lazy"></iframe>
+        <a class="location__map-link" href="https://www.openstreetmap.org/?mlat=28.6315&amp;mlon=77.2167#map=17/28.6315/77.2167" target="_blank" rel="noopener">Open in Maps ↗</a>
+      </div>
+      <div class="location__info">
+        <h3>Venus Makover</h3>
+        <!-- TODO: Replace with the salon's real address and contact details -->
+        <p class="location__address">2nd Floor, Pearl Plaza,<br />Connaught Place, New Delhi 110001</p>
+        <dl class="location__hours">
+          <dt>Mon – Sat</dt><dd>10:00 AM – 8:30 PM</dd>
+          <dt>Sunday</dt><dd>11:00 AM – 6:00 PM</dd>
+        </dl>
+        <p class="location__contact">
+          <a href="tel:+911234567890">+91 12345 67890</a><br />
+          <a href="mailto:hello@venusmakover.com">hello@venusmakover.com</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <p class="footer__brand">Venus <span>Makover</span></p>
+    <p>Where beauty meets artistry.</p>
+    <p class="footer__copy">© <span id="year"></span> Venus Makover. All rights reserved.</p>
+  </footer>
+
+  <!-- ===== Floating WhatsApp Button ===== -->
+  <a class="whatsapp-fab" id="whatsappFab" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="currentColor"><path d="M16 2.7C8.7 2.7 2.8 8.6 2.8 15.9c0 2.3.6 4.6 1.8 6.6L2.7 29.3l7-1.8c1.9 1 4.1 1.6 6.3 1.6 7.3 0 13.2-5.9 13.2-13.2S23.3 2.7 16 2.7zm0 24.1c-2 0-3.9-.5-5.6-1.5l-.4-.2-4.1 1.1 1.1-4-.3-.4c-1.1-1.8-1.7-3.8-1.7-5.9C5 9.8 9.9 4.9 16 4.9S27 9.8 27 15.9 22.1 26.8 16 26.8zm6-8.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1 1.3-.2.2-.4.3-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.6.1-.2.1-.4 0-.6-.1-.2-.8-1.8-1-2.5-.3-.6-.6-.5-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.7 5.9 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.9-.8 2.2-1.6.3-.8.3-1.4.2-1.6-.1-.1-.3-.2-.6-.4z"/></svg>
+  </a>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
