@@ -1,0 +1,17 @@
+# Builds the React client and deploys it to GitLab Pages.
+# Note: the Node.js backend (server/) must be hosted separately (e.g. Render, Railway, VPS);
+# the client gracefully falls back to demo mode when the API is unreachable.
+pages:
+  stage: deploy
+  image: node:20-alpine
+  script:
+    - cd client
+    - npm install --no-audit --no-fund
+    - npm run build
+    - cd ..
+    - mv client/dist public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
