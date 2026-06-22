@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Navbar({ theme, onToggleTheme }) {
+export default function Navbar() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -16,14 +16,6 @@ export default function Navbar({ theme, onToggleTheme }) {
       </nav>
 
       <div className="nav__controls">
-        <button
-          className="theme-toggle"
-          onClick={onToggleTheme}
-          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-        >
-          <span className="theme-toggle__icon" key={theme}>{theme === 'dark' ? '☀️' : '🌙'}</span>
-        </button>
         <button
           className="nav__toggle"
           onClick={() => setOpen(!open)}

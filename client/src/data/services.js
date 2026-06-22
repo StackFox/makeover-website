@@ -1,5 +1,5 @@
 // TODO: Replace with the salon's real WhatsApp number (country code, digits only)
-export const WHATSAPP_NUMBER = '911234567890';
+export const WHATSAPP_NUMBER = '918700433730';
 
 export function waLink(message) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
