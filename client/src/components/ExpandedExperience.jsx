@@ -1,7 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { SlSocialInstagram } from "react-icons/sl";
 import { FaGoogle } from "react-icons/fa";
 
+const HERO_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80',
+    title: 'Where Beauty Meets',
+    italic: 'Transformation',
+    subtitle: 'Premium hair, skin & makeup services tailored just for you.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1920&q=80',
+    title: 'Indulge in',
+    italic: 'everyday beauty',
+    subtitle: 'The conscious beauty & wellness experience.',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1920&q=80',
+    title: 'Elegance',
+    italic: 'Redefined',
+    subtitle: 'Step into elegance, walk out confident.',
+  },
+];
+
+// TODO: bring services from the backend
 const SERVICES = [
   {
     category: 'Hair',
@@ -23,6 +45,7 @@ const SERVICES = [
   },
 ];
 
+// TODO: Make the reviews dynamic
 const REVIEWS = [
   {
     name: 'Priya S.',
@@ -45,6 +68,39 @@ const FILTERS = ['All', 'Hair', 'Skin', 'Makeup', 'Bridal', 'Nails'];
 
 export default function ExpandedExperience() {
   const [activeFilter, setActiveFilter] = useState('All');
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
+  const [service, setService] = useState("");
+
+  const nextSlide = useCallback(() => {
+    setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 4500);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
+
+  const handleRequestAppointment = (e) => {
+    e.preventDefault();
+
+    const message = `*New Booking Request*
+
+Name: ${fullName}
+Phone: ${phone}
+Service: ${service}
+Preferred Date: ${preferredDate}
+Preferred Time: ${preferredTime}`.trim();
+
+    const encodedMessage = encodeURIComponent(message);
+    window.open(
+      `https://wa.me/+918700433730?text=${encodedMessage}`,
+      "_blank"
+    );
+  };
 
   // Scroll reveal animation
   useEffect(() => {
@@ -68,30 +124,45 @@ export default function ExpandedExperience() {
     <div className="expanded-experience">
       {/* HERO SECTION */}
       <section className="exp-hero">
-        <div className="exp-hero__bg">
-          <div 
-            className="exp-hero__bg-image"
-            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrknnYjipSSsPudBjHMiUc0txo4Wx8KSKC0kfLf9SflRkysYo1z1fj2L9NA0a4EvPDDi5iAClO3CMptLbA6rnxKAcFez8qUQHzrjG_ETPKLkRBSTeTZJrWji4ytJHLZdldorzox0FUBgT5RfnNoT-oyVaPEeT1T0eASMsSJoElkstGD77wUhvGjoGjtJ2euoK-7PvpwXEzHvLr0Uqw44gpqKTIC6JGAaZckb6eLTjYCrsxxz0yMK-0KvW0pbi8G6eyzKl2xcPp4iM')" }}
-          />
+        <div className="exp-hero__carousel">
+          {HERO_SLIDES.map((slide, i) => (
+            <div
+              key={i}
+              className={`exp-hero__slide ${i === activeSlide ? 'active' : ''}`}
+            >
+              <img src={slide.image} alt="" className="exp-hero__slide-img" />
+            </div>
+          ))}
           <div className="exp-hero__overlay" />
         </div>
         <div className="exp-hero__content">
-          <div className="exp-hero__badge">
-            <span className="material-symbols-outlined">stars</span>
-            <span>Walk-ins Welcome · Open 7 Days</span>
-          </div>
           <h1 className="exp-hero__title">
-            Where Beauty Meets <em>Transformation</em>
+            {HERO_SLIDES[activeSlide].title} <em>{HERO_SLIDES[activeSlide].italic}</em>
           </h1>
           <p className="exp-hero__subtitle">
-            Premium hair, skin & makeup services tailored just for you. Step into elegance, walk out confident.
+            {HERO_SLIDES[activeSlide].subtitle}
           </p>
           <div className="exp-hero__actions">
-            <a href="#booking" className="btn btn--primary">Book an Appointment</a>
-            <a href="https://wa.me/910000000000" target="_blank" rel="noopener noreferrer" className="btn btn--outline">
-              Chat on WhatsApp
-            </a>
+            <a href="#booking" className="btn btn--dark">Book now <span>&rsaquo;</span></a>
           </div>
+        </div>
+        <div className="exp-hero__video-thumb">
+          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Preview" />
+          <button className="exp-hero__play" aria-label="Play video">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </button>
+        </div>
+        <div className="exp-hero__progress">
+          {HERO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              className={`exp-hero__progress-line ${i === activeSlide ? 'active' : ''}`}
+              onClick={() => setActiveSlide(i)}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -141,7 +212,7 @@ export default function ExpandedExperience() {
         <div className="exp-owner__grid">
           <div className="exp-owner__image-container">
             <div className="exp-owner__image">
-              <img 
+              <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5O5eAVlt15NqMLmXXItfaGd83I_EyxCrSFB2B93228ipWQXCUMOmQ68Ja9fb2hIVFi30XXQDBKNnb39zauZ_vx9xaJ4VcWuU1n-_oXmIym5uwRKDxQ_GQX8F0K_RtgYHeDyltOZa1FOHL7PX6ze5LlG0VsHCVfhWXBvCRGigSvXXEFJePmONSp4RJ8LAXLFV7g_oPwxLua0ue3NF-fj6ZvjirnPBYk0wpbBmb52IhUTw7MXlH9KjhgJUhiZIwDoqo07Ap6Ae0BeA"
                 alt="The Visionary Behind Venus"
               />
@@ -237,16 +308,16 @@ export default function ExpandedExperience() {
             <form className="exp-booking__form">
               <div className="exp-booking__field-row">
                 <div className="exp-booking__field">
-                  <input type="text" id="name" placeholder=" " />
+                  <input type="text" id="name" placeholder=" " onChange={(e) => setFullName(e.target.value)} />
                   <label htmlFor="name">Full Name</label>
                 </div>
                 <div className="exp-booking__field">
-                  <input type="tel" id="phone" placeholder=" " />
+                  <input type="tel" id="phone" placeholder=" " onChange={(e) => { setPhone(e.target.value) }} />
                   <label htmlFor="phone">Phone Number</label>
                 </div>
               </div>
               <div className="exp-booking__field">
-                <select id="service" defaultValue="">
+                <select id="service" defaultValue="" onChange={(e) => setService(e.target.value)}>
                   <option disabled value="">Select a Service</option>
                   <option value="hair">Hair Styling & Care</option>
                   <option value="skin">Skin Treatments</option>
@@ -257,16 +328,16 @@ export default function ExpandedExperience() {
               </div>
               <div className="exp-booking__field-row">
                 <div className="exp-booking__field">
-                  <input type="date" id="date" />
+                  <input type="date" id="date" onChange={(e) => { setPreferredDate(e.target.value) }} />
                   <label htmlFor="date">Preferred Date</label>
                 </div>
                 <div className="exp-booking__field">
-                  <input type="time" id="time" />
+                  <input type="time" id="time" onChange={(e) => { setPreferredTime(e.target.value) }} />
                   <label htmlFor="time">Preferred Time</label>
                 </div>
               </div>
-              {/* TODO: implement Appointment request button and update catalogs to parse from the server */}
-              <button type="button" className="btn btn--primary exp-booking__submit">
+              {/* TODO: implement update catalogs to parse from the server */}
+              <button type="button" className="btn btn--primary exp-booking__submit" onClick={handleRequestAppointment}>
                 Request Appointment
               </button>
             </form>
@@ -281,9 +352,9 @@ export default function ExpandedExperience() {
             <p className="exp-booking__whatsapp-desc">
               Get immediate assistance, ask questions, or book directly via WhatsApp.
             </p>
-            <a 
-              href="https://wa.me/918700433730" 
-              target="_blank" 
+            <a
+              href="https://wa.me/918700433730"
+              target="_blank"
               rel="noopener noreferrer"
               className="btn btn--whatsapp"
             >
@@ -334,7 +405,7 @@ export default function ExpandedExperience() {
               <div>
                 <h4 className="exp-location__info-label">Phone</h4>
                 <p className="exp-location__info-text">
-                  +91 870 043 3730<br />
+                  <a href="tel:+918700433730">+91 870 043 3730</a><br />
                 </p>
               </div>
             </div>

@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const close = () => setOpen(false);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <header className="nav" id="top">
-      <a className="nav__brand" href="#top" onClick={close}>Venus <span>Makover</span></a>
+    <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`} id="top">
+      <a className="nav__brand" href="#top" onClick={close}>Venus <span>Makeover</span></a>
 
       <nav className={`nav__links ${open ? 'open' : ''}`} aria-label="Primary navigation">
         <a href="#services" onClick={close}>Services</a>
