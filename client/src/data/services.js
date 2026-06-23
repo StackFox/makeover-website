@@ -1,12 +1,10 @@
 // TODO: Replace with the salon's real WhatsApp number (country code, digits only)
-export const WHATSAPP_NUMBER = '918700433730';
+export const WHATSAPP_NUMBER = '+918700433730';
 
 export function waLink(message) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-// Local catalog — also served by the Node.js backend at GET /api/services.
-// The client uses this as a fallback so the GitLab Pages demo works without the API.
 export const SERVICES = [
   { id: 1,  name: 'Signature Haircut & Styling', category: 'Hair',   icon: '✂️', gradient: 'g-hair',   duration: '60 min',  price: '₹1,200',  desc: 'Precision cut tailored to your face shape, finished with a luxe blow-dry and styling.' },
   { id: 2,  name: 'Balayage Hair Coloring',      category: 'Hair',   icon: '🎨', gradient: 'g-hair',   duration: '150 min', price: '₹5,500',  desc: 'Hand-painted, sun-kissed dimension using ammonia-free premium color.' },

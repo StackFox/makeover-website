@@ -69,6 +69,7 @@ const FILTERS = ['All', 'Hair', 'Skin', 'Makeup', 'Bridal', 'Nails'];
 export default function ExpandedExperience() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
@@ -76,13 +77,26 @@ export default function ExpandedExperience() {
   const [service, setService] = useState("");
 
   const nextSlide = useCallback(() => {
-    setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    setIsExiting(true);
+    setTimeout(() => {
+      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setIsExiting(false);
+    }, 300);
   }, []);
 
   useEffect(() => {
     const timer = setInterval(nextSlide, 4500);
     return () => clearInterval(timer);
   }, [nextSlide]);
+
+  const goToSlide = useCallback((index) => {
+    if (index === activeSlide) return;
+    setIsExiting(true);
+    setTimeout(() => {
+      setActiveSlide(index);
+      setIsExiting(false);
+    }, 300);
+  }, [activeSlide]);
 
   const handleRequestAppointment = (e) => {
     e.preventDefault();
@@ -136,30 +150,30 @@ Preferred Time: ${preferredTime}`.trim();
           <div className="exp-hero__overlay" />
         </div>
         <div className="exp-hero__content">
-          <h1 className="exp-hero__title">
+          <h1 className={`exp-hero__title ${isExiting ? 'is-exiting' : ''}`}>
             {HERO_SLIDES[activeSlide].title} <em>{HERO_SLIDES[activeSlide].italic}</em>
           </h1>
-          <p className="exp-hero__subtitle">
+          <p className={`exp-hero__subtitle ${isExiting ? 'is-exiting' : ''}`}>
             {HERO_SLIDES[activeSlide].subtitle}
           </p>
           <div className="exp-hero__actions">
             <a href="#booking" className="btn btn--dark">Book now <span>&rsaquo;</span></a>
           </div>
         </div>
-        <div className="exp-hero__video-thumb">
+        {/* <div className="exp-hero__video-thumb">
           <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Preview" />
           <button className="exp-hero__play" aria-label="Play video">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
           </button>
-        </div>
+        </div> */}
         <div className="exp-hero__progress">
           {HERO_SLIDES.map((_, i) => (
             <button
               key={i}
               className={`exp-hero__progress-line ${i === activeSlide ? 'active' : ''}`}
-              onClick={() => setActiveSlide(i)}
+              onClick={() => goToSlide(i)}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}
@@ -393,8 +407,8 @@ Preferred Time: ${preferredTime}`.trim();
               <div>
                 <h4 className="exp-location__info-label">Address</h4>
                 <p className="exp-location__info-text">
-                  Shop no. 2, 1st Floor, Prem Plaza, Near Aura Market<br />
-                  Ghaziabad, UP, India
+                  Shop No. 2, 1st Floor, Prem Plaza, Near Aura Market<br />
+                  Ghaziabad, Uttar Pradesh 201003
                 </p>
               </div>
             </div>
@@ -443,7 +457,7 @@ Preferred Time: ${preferredTime}`.trim();
               <a href="https://www.instagram.com/_themakeoversalon_/" target='_blank' aria-label="Instagram">
                 <span className="material-symbols-outlined"><SlSocialInstagram /></span>
               </a>
-              <a href="#" aria-label="YouTube">
+              <a href="https://share.google/iJ3zg4XSrwr6FvRoj" aria-label="Google" target='_blank'>
                 <span className="material-symbols-outlined"><FaGoogle /></span>
               </a>
             </div>

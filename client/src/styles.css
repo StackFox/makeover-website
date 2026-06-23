@@ -515,6 +515,11 @@ a { color: inherit; }
   color: #fff;
   margin-bottom: 1.2rem;
   max-width: 14ch;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.exp-hero__title.is-exiting {
+  opacity: 0;
+  transform: translateY(-16px);
 }
 
 .exp-hero__title em {
@@ -531,6 +536,11 @@ a { color: inherit; }
   margin-bottom: 2rem;
   line-height: 1.6;
   font-weight: 300;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.exp-hero__subtitle.is-exiting {
+  opacity: 0;
+  transform: translateY(-12px);
 }
 
 .exp-hero__actions {

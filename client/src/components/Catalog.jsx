@@ -1,17 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { SERVICES, CATEGORIES } from '../data/services.js';
 
 export default function Catalog({ onSelect }) {
   const [filter, setFilter] = useState('All');
-  const [services, setServices] = useState(SERVICES);
-
-  // Prefer the backend catalog; fall back to local data (e.g. on GitLab Pages)
-  useEffect(() => {
-    fetch('/api/services')
-      .then((res) => (res.ok ? res.json() : Promise.reject()))
-      .then((data) => Array.isArray(data) && data.length && setServices(data))
-      .catch(() => {});
-  }, []);
+  const [services] = useState(SERVICES);
 
   const items = filter === 'All' ? services : services.filter((s) => s.category === filter);
 

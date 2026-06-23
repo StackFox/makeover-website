@@ -8,7 +8,6 @@ export default function Booking({ preselected }) {
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
   const [confirmed, setConfirmed] = useState(null);
-  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (preselected) setForm((f) => ({ ...f, service: preselected }));
@@ -27,28 +26,8 @@ export default function Booking({ preselected }) {
     return Object.keys(errs).length === 0;
   };
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    if (!validate()) return;
-    setSending(true);
-    try {
-      const res = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      if (!res.ok) throw new Error('API unavailable');
-      const data = await res.json();
-      setConfirmed({ ...form, reference: data.reference });
-    } catch {
-      // Demo fallback when the backend is not reachable (e.g. GitLab Pages)
-      setConfirmed({ ...form, reference: null });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const sendWhatsApp = () => {
     if (!validate()) return;
     const text = [
       "Hi Venus Makover! I'd like to book an appointment.",
@@ -60,6 +39,7 @@ export default function Booking({ preselected }) {
       form.notes.trim() ? `Notes: ${form.notes.trim()}` : ''
     ].filter(Boolean).join('\n');
     window.open(waLink(text), '_blank', 'noopener');
+    setConfirmed({ ...form, reference: null });
   };
 
   const reset = () => {
@@ -116,8 +96,7 @@ export default function Booking({ preselected }) {
               <textarea id="notes" name="notes" rows="3" placeholder="Anything we should know?" value={form.notes} onChange={update}></textarea>
             </div>
             <div className="booking__actions">
-              <button type="submit" className="btn" disabled={sending}>{sending ? 'Sending…' : 'Confirm Booking'}</button>
-              <button type="button" className="btn btn--whatsapp" onClick={sendWhatsApp}>Send via WhatsApp</button>
+              <button type="submit" className="btn">Book via WhatsApp</button>
             </div>
           </form>
         )}
