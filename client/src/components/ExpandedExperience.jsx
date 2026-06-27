@@ -1,80 +1,27 @@
 import { useEffect, useState, useCallback } from 'react';
 import { SlSocialInstagram } from "react-icons/sl";
 import { FaGoogle } from "react-icons/fa";
+import { REVIEWS } from '../data/reviews';
+import { SERVICES, FEATURED_SERVICES } from '../data/services';
+import { HERO_SLIDES } from '../data/heroSlides';
+import ServiceCard from './ServiceCard';
+import TestimonialCarousel from './TestimonialCarousel';
+import ServiceModal from './ServiceModal';
 
-const HERO_SLIDES = [
-  {
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80',
-    title: 'Where Beauty Meets',
-    italic: 'Transformation',
-    subtitle: 'Premium hair, skin & makeup services tailored just for you.',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1920&q=80',
-    title: 'Indulge in',
-    italic: 'everyday beauty',
-    subtitle: 'The conscious beauty & wellness experience.',
-  },
-  {
-    image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1920&q=80',
-    title: 'Elegance',
-    italic: 'Redefined',
-    subtitle: 'Step into elegance, walk out confident.',
-  },
-];
+const STARWALL_URL = 'https://starwall.io/embed/bq2FP2rjEuUgEwXfTlb2VsT8UUgf5HW4/widget.js';
 
-// TODO: bring services from the backend
-const SERVICES = [
-  {
-    category: 'Hair',
-    name: 'Signature Haircut',
-    description: 'Tailored to your face shape and lifestyle by our expert stylists.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAVIZzriaNtDPIFP4zqHDZGMRk8iqEBUqidAlYYVn7Fr8bXlciSel8LRSDZ8iZER5PLrZqbtPR-f-PKFpkU9k401aUsXqJ-hrVGoGLKu0u-FoMcJI2JGle_iUNMfMtHPTjp8iDD8qQM8H48cEAtkmgx4eQWig_KCCwLpVFjhLgSPbJci40U40FYXc3CPaUiCdF_IZumHVZDb_GGSGZs-vIsV5Uww158lNVXBBNacrvRcRoinQLo5gRufE-GrFgMREslabtNJWjaxN8',
-  },
-  {
-    category: 'Skin',
-    name: 'Rejuvenating Facial',
-    description: 'Deep cleansing and hydration to restore your natural glow.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuChkcpt4Z-l9CEvHNt8w3iURS91kd_9nQViZ2c-si1MvaWzEBsLeBCWwUEknFhzLgCtUInrfMLpGdL9d4Eyi8qqnYXBOI8_BiW_7MheKD5ep4S-tN2HSwcuB2RPAtmJQqcu1XLBduScAy_8KuSZ9I9GfeypL1Zl1IqziPdDd6P5JXboAXlg5lRNvBPeA3Lw43xel_Ehxf_xqdQgp0uHQEpRKCX7-RYw6lGZMEqX_1gWHcndhAaNYtBpSquSQfkj0rtxjddznEp1c-Y',
-  },
-  {
-    category: 'Bridal',
-    name: 'Bridal Makeup',
-    description: 'Flawless, long-lasting artistry for your special day.',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDpPY1gCQ_flSO1umVUp_tL7qeSrfSc313hssSNS9_bWWZ2RzafSMPauNKyHUm_PTlCz_9HZZ2XkyaiXZsBNYp2pSUolRa8a475m4KnCaiV_YEQynObTCw1VoWkWvRPmDatgkiaXaF78tzLQNNuKqeTXeUA7F9NhhUMl7DJoGLZ_MXqJVqPDhTVJyqmqwvjJsPjQyeujUtCHUHJr81-Sn0zfJgN2j3T3ijMIE2zHyEAZW9K_MEsLfBUqwUSkKqII9SWMyLPiO1Nc8o',
-  },
-];
-
-// TODO: Make the reviews dynamic
-const REVIEWS = [
-  {
-    name: 'Priya S.',
-    service: 'Bridal Makeup',
-    quote: 'The bridal makeup was absolutely stunning and stayed flawless throughout my entire 12-hour wedding ceremony. Truly world-class artistry!',
-  },
-  {
-    name: 'Rahul M.',
-    service: 'Signature Haircut',
-    quote: "Best haircut I've ever had. The stylist took the time to understand my hair texture and gave me a look that's so easy to maintain.",
-  },
-  {
-    name: 'Elena R.',
-    service: 'Rejuvenating Facial',
-    quote: "The facial treatment was so relaxing. My skin hasn't looked this radiant in years. The atmosphere at Venus is pure peace.",
-  },
-];
-
-const FILTERS = ['All', 'Hair', 'Skin', 'Makeup', 'Bridal', 'Nails'];
-
-export default function ExpandedExperience() {
-  const [activeFilter, setActiveFilter] = useState('All');
+export default function ExpandedExperience({ onViewAllServices, onNavigate }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  const [starwallLoaded, setStarwallLoaded] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
   const [service, setService] = useState("");
+
+  const [selectedService, setSelectedService] = useState(null);
+  const [customMessage, setCustomMessage] = useState("");
 
   const nextSlide = useCallback(() => {
     setIsExiting(true);
@@ -98,6 +45,15 @@ export default function ExpandedExperience() {
     }, 300);
   }, [activeSlide]);
 
+  const scrollToBooking = useCallback(() => {
+    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  const handleBookViaForm = useCallback((serviceName) => {
+    setService(serviceName);
+    setTimeout(() => scrollToBooking(), 100);
+  }, [scrollToBooking]);
+
   const handleRequestAppointment = (e) => {
     e.preventDefault();
 
@@ -107,7 +63,7 @@ Name: ${fullName}
 Phone: ${phone}
 Service: ${service}
 Preferred Date: ${preferredDate}
-Preferred Time: ${preferredTime}`.trim();
+Preferred Time: ${preferredTime}${customMessage ? `\n\nMessage: ${customMessage}` : ''}`.trim();
 
     const encodedMessage = encodeURIComponent(message);
     window.open(
@@ -132,6 +88,35 @@ Preferred Time: ${preferredTime}`.trim();
 
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
+  }, []);
+
+  // Load starwall.io review widget
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = STARWALL_URL;
+    script.async = true;
+
+    const checkWidget = () => {
+      const widget = document.getElementById('reviews-widget-3');
+      if (widget && widget.children.length > 0) {
+        setStarwallLoaded(true);
+        return true;
+      }
+      return false;
+    };
+
+    script.onload = () => {
+      // Poll for widget content since it may render async
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (checkWidget() || attempts > 10) clearInterval(interval);
+      }, 1000);
+    };
+
+    script.onerror = () => setStarwallLoaded(false);
+    document.body.appendChild(script);
+    return () => { script.remove(); };
   }, []);
 
   return (
@@ -160,14 +145,6 @@ Preferred Time: ${preferredTime}`.trim();
             <a href="#booking" className="btn btn--dark">Book now <span>&rsaquo;</span></a>
           </div>
         </div>
-        {/* <div className="exp-hero__video-thumb">
-          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Preview" />
-          <button className="exp-hero__play" aria-label="Play video">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </button>
-        </div> */}
         <div className="exp-hero__progress">
           {HERO_SLIDES.map((_, i) => (
             <button
@@ -227,7 +204,8 @@ Preferred Time: ${preferredTime}`.trim();
           <div className="exp-owner__image-container">
             <div className="exp-owner__image">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5O5eAVlt15NqMLmXXItfaGd83I_EyxCrSFB2B93228ipWQXCUMOmQ68Ja9fb2hIVFi30XXQDBKNnb39zauZ_vx9xaJ4VcWuU1n-_oXmIym5uwRKDxQ_GQX8F0K_RtgYHeDyltOZa1FOHL7PX6ze5LlG0VsHCVfhWXBvCRGigSvXXEFJePmONSp4RJ8LAXLFV7g_oPwxLua0ue3NF-fj6ZvjirnPBYk0wpbBmb52IhUTw7MXlH9KjhgJUhiZIwDoqo07Ap6Ae0BeA"
+                // TODO: Add a real photo of the owner here
+                src="images/misc/Owner.jpg"
                 alt="The Visionary Behind Venus"
               />
             </div>
@@ -242,8 +220,8 @@ Preferred Time: ${preferredTime}`.trim();
               <p>At Venus Makeover, her philosophy of holistic self-care is woven into every service. She leads a team of certified experts who share her passion for excellence, ensuring that every client who walks through our doors leaves feeling empowered and rejuvenated.</p>
             </div>
             <div className="exp-owner__signature">
-              <p className="exp-owner__name">Anjali Sharma</p>
-              <p className="exp-owner__role">Managing Director, Venus Makeover</p>
+              <p className="exp-owner__name">Jyoti Sharma</p>
+              <p className="exp-owner__role">Owner, Venus Makeover</p>
             </div>
           </div>
         </div>
@@ -252,39 +230,16 @@ Preferred Time: ${preferredTime}`.trim();
       {/* SERVICES SECTION */}
       <section className="exp-services reveal" id="services">
         <div className="exp-services__header">
-          <h2 className="exp-services__title">Our Services</h2>
+          <h2 className="exp-services__title">Featured Services</h2>
           <div className="exp-services__divider" />
         </div>
-        <div className="exp-services__filters">
-          {FILTERS.map((filter) => (
-            <button
-              key={filter}
-              className={`exp-services__filter ${activeFilter === filter ? 'active' : ''}`}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
         <div className="exp-services__grid">
-          {SERVICES.map((service) => (
-            <div key={service.name} className="exp-services__card">
-              <div className="exp-services__card-image">
-                <img src={service.image} alt={service.name} />
-              </div>
-              <div className="exp-services__card-content">
-                <p className="exp-services__card-category">{service.category}</p>
-                <h3 className="exp-services__card-name">{service.name}</h3>
-                <p className="exp-services__card-desc">{service.description}</p>
-                <a href="#booking" className="exp-services__card-link">
-                  Book Service <span className="material-symbols-outlined">arrow_forward</span>
-                </a>
-              </div>
-            </div>
+          {FEATURED_SERVICES.map((service) => (
+            <ServiceCard key={service.id} service={service} onClick={setSelectedService} />
           ))}
         </div>
         <div className="exp-services__footer">
-          <a href="#" className="exp-services__view-all">View All Services</a>
+          <button onClick={onViewAllServices} className="exp-services__view-all">View All Services</button>
         </div>
       </section>
 
@@ -295,22 +250,12 @@ Preferred Time: ${preferredTime}`.trim();
           <h2 className="exp-reviews__title">What Our Clients Say</h2>
           <div className="exp-reviews__divider" />
         </div>
-        <div className="exp-reviews__grid">
-          {REVIEWS.map((review) => (
-            <div key={review.name} className="exp-reviews__card">
-              <div className="exp-reviews__stars">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="material-symbols-outlined">star</span>
-                ))}
-              </div>
-              <p className="exp-reviews__quote">"{review.quote}"</p>
-              <div className="exp-reviews__author">
-                <p className="exp-reviews__name">— {review.name}</p>
-                <p className="exp-reviews__service">{review.service}</p>
-              </div>
-            </div>
-          ))}
+
+        <div className="exp-reviews__widget" style={{ display: starwallLoaded ? 'block' : 'none' }}>
+          <div id="reviews-widget-3"></div>
         </div>
+
+        {!starwallLoaded && <TestimonialCarousel />}
       </section>
 
       {/* BOOKING SECTION */}
@@ -331,12 +276,11 @@ Preferred Time: ${preferredTime}`.trim();
                 </div>
               </div>
               <div className="exp-booking__field">
-                <select id="service" defaultValue="" onChange={(e) => setService(e.target.value)}>
+                <select id="service" value={service} onChange={(e) => setService(e.target.value)}>
                   <option disabled value="">Select a Service</option>
-                  <option value="hair">Hair Styling & Care</option>
-                  <option value="skin">Skin Treatments</option>
-                  <option value="makeup">Makeup Artistry</option>
-                  <option value="bridal">Bridal Package</option>
+                  {SERVICES.map((s) => (
+                    <option key={s.id} value={s.name}>{s.name} — {s.price}</option>
+                  ))}
                 </select>
                 <label htmlFor="service">Service</label>
               </div>
@@ -349,6 +293,10 @@ Preferred Time: ${preferredTime}`.trim();
                   <input type="time" id="time" onChange={(e) => { setPreferredTime(e.target.value) }} />
                   <label htmlFor="time">Preferred Time</label>
                 </div>
+              </div>
+              <div className="exp-booking__field">
+                <textarea id="customMessage" rows="3" placeholder=" " onChange={(e) => setCustomMessage(e.target.value)} />
+                <label htmlFor="customMessage">Custom Message (optional)</label>
               </div>
               {/* TODO: implement update catalogs to parse from the server */}
               <button type="button" className="btn btn--primary exp-booking__submit" onClick={handleRequestAppointment}>
@@ -449,7 +397,13 @@ Preferred Time: ${preferredTime}`.trim();
       <footer className="exp-footer">
         <div className="exp-footer__grid">
           <div className="exp-footer__brand">
-            <a href="#" className="exp-footer__logo">Venus Makeover</a>
+            <a href="#" className="exp-footer__logo">
+              <img src="/images/misc/Venus Makeover Logo.svg" alt="Venus Makeover" className="exp-footer__logo-img" />
+              <span className="exp-footer__logo-text">
+                <span className="exp-footer__brand-name">VENUS</span>
+                <span className="exp-footer__brand-sub">MAKEOVER &amp; ACADEMY</span>
+              </span>
+            </a>
             <p className="exp-footer__desc">
               Premium salon and spa services dedicated to enhancing your natural beauty in a luxurious, relaxing environment.
             </p>
@@ -465,16 +419,16 @@ Preferred Time: ${preferredTime}`.trim();
           <div className="exp-footer__links">
             <h4 className="exp-footer__links-title">Legal</h4>
             <ul>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Cookie Policy</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('privacy'); }}>Privacy Policy</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('terms'); }}>Terms of Service</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('cookies'); }}>Cookie Policy</a></li>
             </ul>
           </div>
           <div className="exp-footer__links">
             <h4 className="exp-footer__links-title">Support</h4>
             <ul>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#contact">Contact Us</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('faq'); }}>FAQ</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('contact'); }}>Contact Us</a></li>
             </ul>
           </div>
         </div>
@@ -482,6 +436,13 @@ Preferred Time: ${preferredTime}`.trim();
           <p>© {new Date().getFullYear()} Venus Makeover. All Rights Reserved.</p>
         </div>
       </footer>
+      {selectedService && (
+        <ServiceModal
+          service={selectedService}
+          onClose={() => setSelectedService(null)}
+          onBookViaForm={handleBookViaForm}
+        />
+      )}
     </div>
   );
 }
