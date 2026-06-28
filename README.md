@@ -1,13 +1,13 @@
 # Venus Makover — Salon Website
 
-A modern, fully responsive website for the **Venus Makover** luxury salon, built with a **React (Vite)** frontend and a **Node.js (Express)** backend.
+A modern, fully responsive website for the **Venus Makover** luxury salon, built with **React (Vite)**. No server required — deploys as a static site.
 
 ## Features
 
 - **Immersive service catalog** — 17 services across 6 categories (Hair, Skin, Makeup, Nails, Bridal, Spa) with category filters, animated cards, and detail modals
-- **Animated hero** — auto-swiping image slideshow with Ken Burns zoom, rotating gradient headline, twinkling sparkles, mouse-parallax glow orbs
-- **Dual booking flows** — validated on-site booking form (POSTs to the API) and WhatsApp deep links with pre-filled messages, plus a floating WhatsApp button
-- **Location section** — embedded OpenStreetMap with address, opening hours, and contact details
+- **Animated hero** — auto-swiping image slideshow with smooth fade transitions, twinkling sparkles, mouse-parallax glow orbs
+- **WhatsApp booking** — validated booking form that sends pre-filled messages via WhatsApp deep links
+- **Location section** — embedded Google Maps with address, opening hours, and contact details
 - **Light/dark theme toggle** — persisted in `localStorage`, applied before first paint
 - **Accessible & responsive** — ARIA labels, keyboard navigation, `prefers-reduced-motion` support, mobile-first layout
 
@@ -24,58 +24,44 @@ A modern, fully responsive website for the **Venus Makover** luxury salon, built
 ## Project structure
 
 ```
-├── client/            # React + Vite frontend
+├── client/               # React + Vite frontend (static, no server needed)
 │   ├── src/
 │   │   ├── components/   # Navbar, Hero, Catalog, ServiceModal, Booking, Location, ...
 │   │   ├── data/         # Service catalog + WhatsApp helpers
 │   │   └── styles.css    # Theme variables + all styling
-│   └── vite.config.js    # Dev proxy to the API, GitLab Pages base path
-├── server/            # Node.js + Express backend
-│   ├── index.js          # /api/services, /api/bookings, static client hosting
-│   └── data/services.js  # Canonical service catalog
-└── .gitlab-ci.yml     # Builds the client and deploys to GitLab Pages
+│   └── vite.config.js    # GitLab Pages base path
+└── .gitlab-ci.yml        # Builds the client and deploys to GitLab Pages
 ```
 
 ## Getting started
 
 ```bash
-# Terminal 1 — backend (http://localhost:3001)
-cd server
-npm install
-npm run dev
-
-# Terminal 2 — frontend (http://localhost:5173, proxies /api to :3001)
 cd client
 npm install
-npm run dev
+npm run dev    # http://localhost:5173
 ```
 
 ### Production build
 
 ```bash
-cd client && npm run build   # outputs client/dist
-cd ../server && npm start    # serves the API and the built client
+cd client && npm run build   # outputs client/dist (static files, ready to deploy)
 ```
-
-## API
-
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/api/services` | List services (optional `?category=` filter) |
-| `POST` | `/api/bookings` | Create a booking (validated; returns a `reference`) |
-| `GET` | `/api/bookings` | List received bookings (in-memory store) |
 
 ## Deployment
 
-- **Frontend**: CI builds `client/` and publishes it to **GitLab Pages** on every push to the default branch. On Pages the booking form falls back to demo mode (no API).
-- **Backend**: host `server/` on any Node platform (Render, Railway, a VPS, etc.). It also serves the built client, so a single Node host can run the whole app.
+Deploy `client/dist` as static files to any hosting platform:
+
+- **GitLab Pages** — CI builds and deploys automatically on push to the default branch
+- **Vercel / Netlify / Cloudflare Pages** — connect your repo, set the build command to `cd client && npm run build` and output directory to `client/dist`
+
+No server or database required.
 
 ## Before going live
 
-- [ ] Replace `WHATSAPP_NUMBER` in `client/src/data/services.js`
-- [ ] Replace the address, phone, email, and map coordinates in `client/src/components/Location.jsx`
-- [ ] Replace the hero slideshow images in `client/src/components/Hero.jsx` with real salon photography
-- [ ] Swap the in-memory booking store in `server/index.js` for a database
+- [ ] Replace `WHATSAPP_NUMBER` in `client/src/data/services.js` with the salon's real number
+- [ ] Replace the address, phone, and map coordinates in `client/src/components/ExpandedExperience.jsx`
+- [ ] Replace the hero slideshow images with real salon photography
+- [ ] Update service descriptions, prices, and durations as needed
 
 ## Documentation
 
