@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { SlSocialInstagram } from "react-icons/sl";
 import { FaGoogle } from "react-icons/fa";
 import { REVIEWS } from '../data/reviews';
@@ -31,6 +31,14 @@ export default function ExpandedExperience({ onViewAllServices, onNavigate }) {
     }, 300);
   }, []);
 
+  const prevSlide = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setActiveSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+      setIsExiting(false);
+    }, 300);
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(nextSlide, 4500);
     return () => clearInterval(timer);
@@ -44,6 +52,24 @@ export default function ExpandedExperience({ onViewAllServices, onNavigate }) {
       setIsExiting(false);
     }, 300);
   }, [activeSlide]);
+
+  // Touch/swipe handling for hero
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) nextSlide();
+      else prevSlide();
+    }
+  };
 
   const scrollToBooking = useCallback(() => {
     document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
@@ -122,7 +148,11 @@ Preferred Time: ${preferredTime}${customMessage ? `\n\nMessage: ${customMessage}
   return (
     <div className="expanded-experience">
       {/* HERO SECTION */}
-      <section className="exp-hero">
+      <section
+        className="exp-hero"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="exp-hero__carousel">
           {HERO_SLIDES.map((slide, i) => (
             <div

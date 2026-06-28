@@ -1,12 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function ServiceCard({ service, onClick }) {
   const [slide, setSlide] = useState(0);
   const images = service?.images || [];
   const hasCarousel = images.length > 1;
+  const touchStartX = useRef(0);
 
   const nextSlide = useCallback(() => {
     setSlide((s) => (s + 1) % images.length);
+  }, [images.length]);
+
+  const prevSlide = useCallback(() => {
+    setSlide((s) => (s - 1 + images.length) % images.length);
   }, [images.length]);
 
   useEffect(() => {
@@ -16,6 +21,19 @@ export default function ServiceCard({ service, onClick }) {
   }, [hasCarousel, nextSlide]);
 
   const mainImage = images[slide] || images[0];
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!hasCarousel) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) nextSlide();
+      else prevSlide();
+    }
+  };
 
   return (
     <div
@@ -31,7 +49,11 @@ export default function ServiceCard({ service, onClick }) {
       }}
     >
       {mainImage && (
-        <div className="svc-card__img-wrap">
+        <div
+          className="svc-card__img-wrap"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <img src={mainImage} alt={service.name} className="svc-card__img" loading="lazy" />
           {hasCarousel && (
             <div className="svc-card__dots">

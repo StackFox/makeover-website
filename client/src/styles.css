@@ -70,14 +70,30 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
 body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  position: relative;
   transition: background 0.4s ease, color 0.4s ease;
+}
+body, #root {
+  min-width: 0;
+}
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 img, svg { display: block; }
 a { color: inherit; }
@@ -126,6 +142,11 @@ a { color: inherit; }
   transition: background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease;
   border-bottom: 1px solid transparent;
 }
+.nav, .expanded-experience, .services-page, .section, .catalog {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
 .nav--scrolled {
   background: rgba(252, 249, 246, 0.82);
   backdrop-filter: blur(16px);
@@ -163,8 +184,11 @@ a { color: inherit; }
 }
 .nav__links a:not(.btn):hover { color: var(--primary); }
 .nav__controls { display: flex; align-items: center; gap: 0.8rem; }
-.nav__toggle { display: none; background: none; border: none; cursor: pointer; }
-.nav__toggle span { display: block; width: 24px; height: 2px; background: #fff; margin: 5px 0; transition: 0.3s; }
+.nav__toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; z-index: 60; }
+.nav__toggle span { display: block; width: 24px; height: 2px; background: #fff; margin: 5px 0; transition: transform 0.3s ease, opacity 0.3s ease; transform-origin: center; }
+.nav__toggle.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav__toggle.is-open span:nth-child(2) { opacity: 0; }
+.nav__toggle.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .nav--scrolled .nav__toggle span { background: var(--primary); }
 
 /* ---- Hero ---- */
@@ -458,13 +482,25 @@ a { color: inherit; }
     position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; padding: 1.4rem; gap: 1.1rem;
     background: var(--nav-bg); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     display: none;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
   }
   .nav__links.open { display: flex; }
-  .nav__links a:not(.btn) { color: var(--text); }
+  .nav__links a:not(.btn) { color: var(--text); font-size: 1rem; padding: 0.4rem 0; }
+  .nav__links a:not(.btn):hover { color: var(--primary); }
+  .nav__links .btn { width: 100%; text-align: center; justify-content: center; }
   .booking__form { grid-template-columns: 1fr; }
   .field--half { grid-column: span 2; }
+
+  .whatsapp-fab {
+    bottom: 1rem; right: 1rem;
+    padding: 0.85rem;
+    border-radius: 50%;
+  }
+  .whatsapp-fab__text { display: none; }
+  .whatsapp-fab__icon { width: 28px; height: 28px; }
 }
 
 /* ============ Expanded Experience Component ============ */
@@ -477,6 +513,7 @@ a { color: inherit; }
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100svh;
   min-height: 600px;
   overflow: hidden;
   display: flex;
@@ -513,8 +550,8 @@ a { color: inherit; }
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.45) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
     rgba(0, 0, 0, 0.05) 100%
   );
   z-index: 1;
@@ -2306,20 +2343,115 @@ a { color: inherit; }
     grid-template-columns: 1fr;
   }
 
+  .exp-hero {
+    min-height: 100svh;
+    height: 100svh;
+  }
+
+  .exp-hero__slide-img {
+    object-position: center 15%;
+  }
+
+  .exp-hero__content {
+    padding: 0 1.2rem;
+    padding-bottom: clamp(5rem, 10vh, 8rem);
+  }
+
   .exp-hero__title {
-    font-size: clamp(2.2rem, 10vw, 3.5rem);
+    font-size: clamp(2rem, 9vw, 3rem);
     max-width: 100%;
+    line-height: 1.1;
+    margin-bottom: 0.8rem;
+  }
+
+  .exp-hero__subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+  }
+
+  .exp-hero__actions {
+    gap: 0.75rem;
+  }
+
+  .exp-hero__actions .btn--dark {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .exp-hero__progress {
+    bottom: 1.5rem;
+    gap: 6px;
+  }
+
+  .exp-hero__progress-line {
+    width: 28px;
+    height: 3px;
   }
 
   .exp-hero__video-thumb {
     display: none;
   }
 
+  .exp-intro__grid,
+  .exp-owner__grid,
+  .exp-booking__grid,
+  .exp-location__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .exp-footer__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .exp-services__grid {
+    grid-template-columns: 1fr;
+  }
+
   .services-page__grid {
     grid-template-columns: 1fr;
   }
 
+  .services-hero {
+    padding: 2rem 1.2rem 1.5rem;
+  }
+
+  .services-hero__title {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+  }
+
+  .services-hero__subtitle {
+    font-size: 0.95rem;
+  }
+
+  .services-page__filters {
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .services-page__filters button {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.9rem;
+  }
+
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .svc-card__img-wrap {
+    height: 180px;
+  }
+
+  .svc-modal__content {
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0;
+    margin-top: auto;
+  }
+
+  .svc-modal {
+    align-items: flex-end;
+    padding: 0;
   }
 }

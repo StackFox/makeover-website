@@ -11,14 +11,25 @@ export default function Navbar({ page, onNavigate }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
   const handleHomeClick = (e) => {
     e.preventDefault();
     onNavigate();
     close();
   };
 
+  const isSubpage = page !== 'home';
+
   return (
-    <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`} id="top">
+    <header className={`nav ${scrolled || isSubpage ? 'nav--scrolled' : ''}`} id="top">
       <a className="nav__brand" href="#top" onClick={handleHomeClick}>
         <img src="/images/misc/Venus Makeover Logo.svg" alt="Venus Makeover" className="nav__logo" />
         <span className="nav__brand-text">
@@ -45,7 +56,7 @@ export default function Navbar({ page, onNavigate }) {
 
       <div className="nav__controls">
         <button
-          className="nav__toggle"
+          className={`nav__toggle ${open ? 'is-open' : ''}`}
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
           aria-expanded={open}

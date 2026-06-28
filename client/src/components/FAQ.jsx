@@ -15,7 +15,7 @@ const FAQ_DATA = [
   },
   {
     q: 'What payment methods do you accept?',
-    a: 'We accept cash, UPI (Google Pay, PhonePe, Paytm), and all major credit and debit cards.',
+    a: 'We accept cash, UPI (Google Pay, PhonePe, Paytm).',
   },
   {
     q: 'Can I cancel or reschedule my appointment?',
@@ -39,7 +39,7 @@ const FAQ_DATA = [
   },
   {
     q: 'Do you offer gift vouchers?',
-    a: 'Yes, we offer gift vouchers for all our services. Contact us on WhatsApp or visit the salon to purchase one.',
+    a: "No, we don't offer any gift vouchers.",
   },
 ];
 
