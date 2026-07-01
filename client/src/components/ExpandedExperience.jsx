@@ -8,9 +8,7 @@ import ServiceCard from './ServiceCard';
 import TestimonialCarousel from './TestimonialCarousel';
 import ServiceModal from './ServiceModal';
 
-const STARWALL_URL = 'https://starwall.io/embed/bq2FP2rjEuUgEwXfTlb2VsT8UUgf5HW4/widget.js';
-
-export default function ExpandedExperience({ onViewAllServices, onNavigate }) {
+export default function ExpandedExperience({ onViewAllServices, onNavigate, bookingService: initialBookingService }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const [starwallLoaded, setStarwallLoaded] = useState(false);
@@ -22,6 +20,14 @@ export default function ExpandedExperience({ onViewAllServices, onNavigate }) {
 
   const [selectedService, setSelectedService] = useState(null);
   const [customMessage, setCustomMessage] = useState("");
+  const widgetContainerRef = useRef(null);
+
+  // Pre-select service when navigating from Services page
+  useEffect(() => {
+    if (initialBookingService) {
+      setService(initialBookingService);
+    }
+  }, [initialBookingService]);
 
   const nextSlide = useCallback(() => {
     setIsExiting(true);
@@ -116,33 +122,38 @@ Preferred Time: ${preferredTime}${customMessage ? `\n\nMessage: ${customMessage}
     return () => observer.disconnect();
   }, []);
 
-  // Load starwall.io review widget
+  // Load starwall.io review widget — move the pre-existing div into position
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = STARWALL_URL;
-    script.async = true;
+    const container = widgetContainerRef.current;
+    if (!container) return;
 
-    const checkWidget = () => {
-      const widget = document.getElementById('reviews-widget-3');
-      if (widget && widget.children.length > 0) {
+    // Move the existing div from index.html into the component
+    const widget = document.getElementById('reviews-widget-23');
+    if (widget && widget.parentElement !== container) {
+      container.appendChild(widget);
+    }
+
+    if (!widget) return;
+
+    // If widget already has content, show it
+    if (widget.children.length > 0) {
+      setStarwallLoaded(true);
+      return;
+    }
+
+    // Poll for widget content
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (widget.children.length > 0) {
         setStarwallLoaded(true);
-        return true;
+        clearInterval(interval);
+      } else if (attempts > 40) {
+        clearInterval(interval);
       }
-      return false;
-    };
+    }, 500);
 
-    script.onload = () => {
-      // Poll for widget content since it may render async
-      let attempts = 0;
-      const interval = setInterval(() => {
-        attempts++;
-        if (checkWidget() || attempts > 10) clearInterval(interval);
-      }, 1000);
-    };
-
-    script.onerror = () => setStarwallLoaded(false);
-    document.body.appendChild(script);
-    return () => { script.remove(); };
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -282,7 +293,7 @@ Preferred Time: ${preferredTime}${customMessage ? `\n\nMessage: ${customMessage}
         </div>
 
         <div className="exp-reviews__widget" style={{ display: starwallLoaded ? 'block' : 'none' }}>
-          <div id="reviews-widget-3"></div>
+          <div ref={widgetContainerRef}></div>
         </div>
 
         {!starwallLoaded && <TestimonialCarousel />}

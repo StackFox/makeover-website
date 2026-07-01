@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Navbar from './components/Navbar.jsx';
 import ExpandedExperience from './components/ExpandedExperience.jsx';
 import Services from './components/Services.jsx';
@@ -21,11 +21,20 @@ const PAGES = {
 
 export default function App() {
   const [page, setPage] = useState(PAGES.home);
+  const [bookingService, setBookingService] = useState('');
 
   const navigate = (p) => {
     setPage(p);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleBookViaForm = useCallback((serviceName) => {
+    setBookingService(serviceName);
+    setPage(PAGES.home);
+    setTimeout(() => {
+      document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' });
+    }, 200);
+  }, []);
 
   // Reveal-on-scroll animations
   useEffect(() => {
@@ -47,7 +56,7 @@ export default function App() {
   const renderPage = () => {
     switch (page) {
       case PAGES.services:
-        return <Services onBack={goHome} />;
+        return <Services onBack={goHome} onBookViaForm={handleBookViaForm} />;
       case PAGES.privacy:
         return <PrivacyPolicy onBack={goHome} />;
       case PAGES.terms:
@@ -59,7 +68,7 @@ export default function App() {
       case PAGES.contact:
         return <Contact onBack={goHome} />;
       default:
-        return <ExpandedExperience onViewAllServices={() => navigate(PAGES.services)} onNavigate={navigate} />;
+        return <ExpandedExperience onViewAllServices={() => navigate(PAGES.services)} onNavigate={navigate} bookingService={bookingService} />;
     }
   };
 

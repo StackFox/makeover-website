@@ -3,7 +3,7 @@ import { SERVICES, CATEGORIES } from '../data/services.js';
 import ServiceCard from './ServiceCard';
 import ServiceModal from './ServiceModal';
 
-export default function Services({ onBack }) {
+export default function Services({ onBack, onBookViaForm }) {
   const [filter, setFilter] = useState('All');
   const [selected, setSelected] = useState(null);
 
@@ -52,6 +52,7 @@ export default function Services({ onBack }) {
           onClose={closeModal}
           onBookViaForm={(name) => {
             closeModal();
+            onBookViaForm?.(name);
           }}
         />
       )}

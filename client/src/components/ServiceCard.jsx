@@ -74,6 +74,12 @@ export default function ServiceCard({ service, onClick }) {
       </div>
       <div className="svc-card__footer">
         <span className="svc-card__price">{service.price}</span>
+        {service.duration && (
+          <span className="svc-card__duration">
+            <span className="material-symbols-outlined">schedule</span>
+            {service.duration}
+          </span>
+        )}
         <span className="svc-card__category">{service.category}</span>
       </div>
     </div>
